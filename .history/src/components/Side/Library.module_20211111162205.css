@@ -1,0 +1,7 @@
+.library {
+  margin-left: 34px;
+  transition-timing-function: cubic-bezier(0.1, 0.57, 0.1, 1);
+  transition-duration: 0ms;
+  transform: translate(0, 0) translateZ(0);
+}
+

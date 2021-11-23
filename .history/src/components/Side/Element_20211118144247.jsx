@@ -1,0 +1,29 @@
+import { useContext, useRef } from "react";
+import { useDrag } from "react-dnd";
+import { ITEM_TYPE } from "../../constants/index";
+import AlchemyContext from "../../store/alchemy-context";
+import classes from "./Element.module.css";
+const Element=(props)=>{
+    const context = useContext(AlchemyContext);
+
+    const ref= useRef();
+    const [,drag]=useDrag(()=>({ 
+        item:{
+            src:props.src,
+            name:props.name,
+            elementRef:props?.elementRef
+        },
+        type: ITEM_TYPE,
+
+    }));
+
+    
+    drag(ref)
+    return(
+        <div className={props.className} style={props?.style}>
+            <img ref={ref} src={props.src} alt={props.alt}/>
+            <div className={classes.elementName}>{props.name}</div>
+        </div>      
+    )
+}
+export default Element;

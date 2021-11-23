@@ -1,0 +1,9 @@
+.side {
+  width: 250px;
+  height: 100%;
+  right: 0;
+  background-color: #f7f1e7;
+  overflow: hidden;
+  background-image: url("/images/library-background.png");
+  z-index: 100;
+}
