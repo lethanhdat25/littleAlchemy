@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./App.css";
+import Side from "./components/Side";
 import Workspace from "./components/Workspace";
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
     <div className="App">
       <>
         <Workspace addToLibrary={(name, id) => setNewElement({ name, id })} />
+        <Side nameElement={newElement} />
       </>
     </div>
   );

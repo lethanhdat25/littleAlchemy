@@ -38,7 +38,6 @@ const Workspace = (props) => {
   const [, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item, monitor) => {
-      console.log(item);
       const position = monitor.getClientOffset();
       addElement(item, position);
     },
@@ -52,34 +51,32 @@ const Workspace = (props) => {
     
     setElementDropped((state) => {
       //tao id moi neu da co phan tu giống đã tồn tại
-      if (state.length !== 0 && item.type !== "inSpace") {
-        const isValid = state.some((element) => element.id === item.id);
-        if (isValid) {
-          indexElement++;
-          return state.concat({
-            ...item,
-            position,
-            inSpace: "inSpace",
-            id: item.name + "-" + indexElement,
+      if (position.x<1664) {
+        if (state.length !== 0 && item.type !== "inSpace") {
+          const isValid = state.some((element) => element.id === item.id);
+          if (isValid) {
+            indexElement++;
+            return state.concat({
+              ...item,
+              position,
+              inSpace: "inSpace",
+              id: item.name + "-" + indexElement,
+            });
+          }
+        } 
+        //thay đổi position
+        const elementFind = state.find((element) => element.id === item.id);
+        if (elementFind) {
+          return state.map((element) => {
+            if (element.id === item.id)
+              return { ...element, position};
+            return element;
           });
         }
-      } 
-      console.log(state);
-
+        return state.concat({ ...item, position, inSpace: "inSpace" });
+      }   
       //xóa nếu vượt quá giới hạn
-      if (position.x>=1664) {
-        return state.filter(element=> element.id!== item.id)
-      }
-      //thay đổi position
-      const elementFind = state.find((element) => element.id === item.id);
-      if (elementFind) {
-        return state.map((element) => {
-          if (element.id === item.id)
-            return { ...element, position};
-          return element;
-        });
-      }
-      return state.concat({ ...item, position, inSpace: "inSpace" });
+      return state.filter(element=> element.id!== item.id)
     });
   };
   //Merge thành element mới
@@ -184,7 +181,7 @@ const Workspace = (props) => {
     <div ref={drop} id="workspace" className={classes.workspace}>
       <div id="side" className={classes.side}>
         <Alphabet/>
-        <Library newElement={newElement}/>
+        <Library newElement={newElement} user-select={false}/>
       </div>
       {elements}
     </div>

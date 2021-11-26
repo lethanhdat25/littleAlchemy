@@ -38,7 +38,6 @@ const Workspace = (props) => {
   const [, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item, monitor) => {
-      console.log(item);
       const position = monitor.getClientOffset();
       addElement(item, position);
     },
@@ -53,15 +52,17 @@ const Workspace = (props) => {
     setElementDropped((state) => {
       //tao id moi neu da co phan tu giống đã tồn tại
       if (state.length !== 0 && item.type !== "inSpace") {
-        const isValid = state.some((element) => element.id === item.id);
-        if (isValid) {
-          indexElement++;
-          return state.concat({
-            ...item,
-            position,
-            inSpace: "inSpace",
-            id: item.name + "-" + indexElement,
-          });
+        if (position.x<1664) {
+          const isValid = state.some((element) => element.id === item.id);
+          if (isValid) {
+            indexElement++;
+            return state.concat({
+              ...item,
+              position,
+              inSpace: "inSpace",
+              id: item.name + "-" + indexElement,
+            });
+          }
         }
       } 
       console.log(state);

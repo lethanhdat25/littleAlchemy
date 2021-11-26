@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDrop } from "react-dnd";
 import { ITEM_TYPE } from "../constants";
-import Alphabet from "./Alphabet";
 import Element from "./Element";
-import Library from "./Library";
 import classes from "./WorkSpace.module.css";
 //Mảng công thức
 const recipes = [
@@ -23,35 +21,30 @@ const recipes = [
 ];
 
 const Workspace = (props) => {
-  //TODO: KHAI BÁO CÁC BIẾN
-  //danh sách element drop
   const [elementDropped, setElementDropped] = useState([]);
-  //danh sách các element merge
   const [elementMerged, setElementMerged] = useState([]);
-  //Sau khi merge lấy giá trị mới thêm vào Library
-  const [newElement, setNewElement] = useState();
-  //danh sách các Component để render
   const [elements, setElements] = useState([]);
-
-
-  //TODO: CODE
   const [, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item, monitor) => {
-      console.log(item);
       const position = monitor.getClientOffset();
       addElement(item, position);
     },
   }));
 
   //Đưa item ra ngoài thì xóa
-  console.log(elementDropped);
+  useEffect(() => {
+    if (props.elementDelete) {
+      setElementDropped((state) =>
+        state.filter((element) => element.id !== props.elementDelete.id)
+      );
+    }
+  }, [props.elementDelete]);
+
   //them elements
   let indexElement = -1;
   const addElement = (item, position) => {
-    
     setElementDropped((state) => {
-      //tao id moi neu da co phan tu giống đã tồn tại
       if (state.length !== 0 && item.type !== "inSpace") {
         const isValid = state.some((element) => element.id === item.id);
         if (isValid) {
@@ -63,19 +56,14 @@ const Workspace = (props) => {
             id: item.name + "-" + indexElement,
           });
         }
-      } 
-      console.log(state);
-
-      //xóa nếu vượt quá giới hạn
-      if (position.x>=1664) {
-        return state.filter(element=> element.id!== item.id)
       }
-      //thay đổi position
       const elementFind = state.find((element) => element.id === item.id);
+      const elementIndex = state.findIndex((element) => element.id === item.id);
       if (elementFind) {
-        return state.map((element) => {
-          if (element.id === item.id)
-            return { ...element, position};
+        const copElement = { ...elementFind, position };
+        return state.map((element, index) => {
+          if (index === elementIndex)
+            return { ...element, position: copElement.position };
           return element;
         });
       }
@@ -100,11 +88,7 @@ const Workspace = (props) => {
         src: `/images/elements/${elementFonded[1]}.png`,
         position: position1,
       };
-
-      //add vào danh sách merge
-      setElementMerged(state=>state.concat({...elementMerged,id:"merge"+"-"+elementMerged.name+"-"+Math.random().toString(36).substring(2, 15)}));
-      
-      //xóa các phần tử trước khi merge
+      setElementMerged(state=>state.concat(elementMerged));
       setElementDropped((state) => {
         const firstState = state.filter(
           (element) =>
@@ -118,20 +102,11 @@ const Workspace = (props) => {
         );
         return secondState;
       });
-
+      setElementDropped(state=>state.concat(elementMerged));
       //thêm element vào side
-      setNewElement({name:elementMerged.name, id: elementMerged.id});
+      props.addToLibrary(elementMerged.name, elementMerged.id);
     }
   };
-
-  //add vao elementDropped sau khi da merge
-  useEffect(()=>{
-    if (elementMerged.length>0) {
-      const itemMerge=elementMerged[elementMerged.length-1];
-      const positionMerge=elementMerged[elementMerged.length-1].position;
-      addElement(itemMerge,positionMerge)
-    }
-  },[elementMerged])
   //Sau khi state update kiểm tra xem có element nào có position gần nhau hay không
   useEffect(() => {
     const elementDroppedLength = elementDropped.length - 1;
@@ -178,14 +153,27 @@ const Workspace = (props) => {
       })
     );
   }, [elementDropped]);
-
-  // RETURN
+  console.log(elementDropped);
   return (
     <div ref={drop} id="workspace" className={classes.workspace}>
-      <div id="side" className={classes.side}>
-        <Alphabet/>
-        <Library newElement={newElement}/>
-      </div>
+     {elementMerged.map((element, index)=>{
+        const x=element.position.x;
+        const y=element.position.y;
+        return (
+          <Element
+            id={element.id}
+            key={index}
+            name={element.name}
+            src={`/images/elements/${element.name}.png`}
+            inSpace={true}
+            style={{
+              position: "absolute",
+              left:x,
+              top:y,
+            }}
+          />
+        );
+      })}
       {elements}
     </div>
   );

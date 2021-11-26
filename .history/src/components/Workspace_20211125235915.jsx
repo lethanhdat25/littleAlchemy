@@ -38,7 +38,6 @@ const Workspace = (props) => {
   const [, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item, monitor) => {
-      console.log(item);
       const position = monitor.getClientOffset();
       addElement(item, position);
     },
@@ -68,7 +67,9 @@ const Workspace = (props) => {
 
       //xóa nếu vượt quá giới hạn
       if (position.x>=1664) {
-        return state.filter(element=> element.id!== item.id)
+        const elementFind=state.find(element=>element.id===item.id);
+        if(elementFind) return state.filter(element=> element.id!== item.id);
+        return state;
       }
       //thay đổi position
       const elementFind = state.find((element) => element.id === item.id);

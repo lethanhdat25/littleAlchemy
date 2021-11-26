@@ -38,7 +38,6 @@ const Workspace = (props) => {
   const [, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item, monitor) => {
-      console.log(item);
       const position = monitor.getClientOffset();
       addElement(item, position);
     },

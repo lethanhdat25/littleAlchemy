@@ -38,7 +38,6 @@ const Workspace = (props) => {
   const [, drop] = useDrop(() => ({
     accept: ITEM_TYPE,
     drop: (item, monitor) => {
-      console.log(item);
       const position = monitor.getClientOffset();
       addElement(item, position);
     },
@@ -67,7 +66,7 @@ const Workspace = (props) => {
       console.log(state);
 
       //xóa nếu vượt quá giới hạn
-      if (position.x>=1664) {
+      if (position.x>=1000) {
         return state.filter(element=> element.id!== item.id)
       }
       //thay đổi position
@@ -120,7 +119,7 @@ const Workspace = (props) => {
       });
 
       //thêm element vào side
-      setNewElement({name:elementMerged.name, id: elementMerged.id});
+      props.addToLibrary(elementMerged.name, elementMerged.id);
     }
   };
 
